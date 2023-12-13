@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      display: flex;
+      flex-direction: row;
+      height: 400px;
+      margin: 0;
+    }
+
+    .season {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .text {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 5px;
+      padding: 5px;
+    }
+
+    .additional {
+      position: absolute;
+      top: 80%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 5px;
+      padding: 5px;
+      display: none; 
+      text-decoration: none; 
+    }
+
+    #spring:hover .additional,
+    #summer:hover .additional,
+    #fall:hover .additional,
+    #winter:hover .additional {
+      display: block;
+    }
+
+    #spring .text {
+      color: darkred;
+    }
+
+    #summer .text {
+      color: darkgreen;
+    }
+
+    #fall .text {
+      color: darkred; 
+    }
+
+    #winter .text {
+      color: black; 
+    }
+
+    .petal, .petal2 {
+      pointer-events: none;
+      position: absolute;
+      width: 5%;
+      height: 5%;
+      animation: spring_fall 3s linear;
+      opacity: 0;
+      object-fit: contain;
+    }
+
+    .snowflake, .snowflake2 {
+      pointer-events: none;
+      position: absolute;
+      width: 5%;
+      height: 3%;
+      animation: winter_fall 3s linear;
+      opacity: 0;
+      object-fit: contain;
+    }
+
+    .leave, .leave2 {
+      pointer-events: none;
+      position: absolute;
+      width: 5%;
+      height: 3%;
+      animation: fall_fall 3s linear;
+      opacity: 0;
+      object-fit: contain;
+    }
+
+    .circle {
+      z-index: 9999;
+      width: 400px;
+      height: 400px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 100%;
+      background: linear-gradient(#3c5aff, #52f2fd);
+      transform: translate3d(0, 0, 0);
+      opacity: 0.7;
+    }
+
+    .wave-one {
+      width: 600px;
+      height: 600px;
+      position: absolute;
+      top: -65%;
+      left: -30%;
+      border-radius: 45%;
+      background: rgba(3,169,244,0.8);
+      animation: move 3s infinite linear;
+    }
+
+    .wave-two {
+      width: 650px;
+      height: 650px;
+      position: absolute;
+      top: -90%;
+      left: -30%;
+      border-radius: 45%;
+      background: rgba(34,79,242,0.8);
+      animation: move 5s infinite linear;
+    }
+
+    .wave-three {
+      width: 650px;
+      height: 650px;
+      position: absolute;
+      top: -100%;
+      left: -30%;
+      border-radius: 45%;
+      background: #202d81;
+      border: 6px solid rgba(250, 250, 250, 0.7);
+      animation: move 7s infinite linear;
+    }
+
+    .wave-four {
+      width: 650px;
+      height: 650px;
+      position: absolute;
+      top: -100%;
+      left: -30%;
+      border-radius: 46%;
+      background: linear-gradient(rgba(252,251,232,0.1) 10%, transparent);
+      animation: move 7s infinite linear;
+    }
+
+
+    #summer {
+      background-image: url('summer.jpg');
+      background-size: cover;
+      height: 100vh;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body:before {
+      content: "";
+      position: absolute;
+      bottom: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px; 
+      background-color: white; 
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+      pointer-events: none; 
+      z-index: 9999; 
+    }
+
+
+    
+    @keyframes spring_fall {
+      0% { top: 0%; transform: rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      100% { top: 90%; transform: rotate(360deg); opacity: 0.5; }
+    }
+
+    @keyframes winter_fall {
+      0% { top: 0%; transform: rotate(0deg); opacity: 1; }
+      10% { opacity: 1; }
+      100% { top: 90%; transform: rotate(360deg); opacity: 0.5; }
+    }
+
+    @keyframes fall_fall {
+      0% { left: 0%; transform: rotate(0deg); opacity: 1; }
+      10% { opacity: 1; }
+      100% { left: 90%; transform: rotate(360deg); opacity: 0.5; }
+    }
+
+    @keyframes move {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+  </style>
+  <title>Korea's Four Seasons</title>
+</head>
+<body>
+  <!-- 봄 계절을 나타내는 div -->
+  <div class="season" id="spring">
+    <img src="spring.jpg" alt="Spring">
+    <div class="text">Spring</div>
+    <a href="pageB.html#spring" class="additional">추가 정보</a>
+  </div>
+  <script>
+    const spring = document.getElementById('spring');
+    let petalInterval;
+    let petal2Interval;
+
+    
+// 봄 계절에 마우스를 올렸을 때 꽃잎 생성 이벤트를 시작하고, 마우스를 내렸을 때 이벤트를 중단
+    spring.addEventListener('mouseover', function(){
+      // setInterval 함수를 사용하여 100ms 마다 createPetal 함수를 호출합니다.
+  // setInterval 함수는 특정 간격마다 함수를 반복 호출하며, 반환값은 intervalID를 나타냅니다.
+      petalInterval = setInterval(createPetal, 100);
+      petal2Interval = setInterval(createPetal2, 100);
+    });
+    spring.addEventListener('mouseout', function() {
+      clearInterval(petalInterval);
+      clearInterval(petal2Interval);
+    });
+
+    function createPetal() {
+      let petal = document.createElement('img');
+      petal.src = 'petal.png';
+      petal.className = 'petal';
+      petal.style.top = '0px';
+      petal.style.left = (Math.random() * (window.innerWidth * 0.7) + window.innerWidth * 0.1) + 'px';
+      document.body.appendChild(petal);
+      let petalFall = setInterval(() => {
+        let currentTop = parseFloat(petal.style.top);
+        if (currentTop >= window.innerHeight - 200) {
+          clearInterval(petalFall);
+          document.body.removeChild(petal);
+        } else {
+          petal.style.top = (currentTop + 1) + 'px';
+        }
+      }, 10);
+    }
+
+      function createPetal2() { 
+      let petal2 = document.createElement('img');
+      petal2.src = 'petal2.png';
+      petal2.className = 'petal2';
+      petal2.style.top = '0px';
+      petal2.style.left = (Math.random() * (window.innerWidth * 0.8) + window.innerWidth * 0.1) + 'px';
+      document.body.appendChild(petal2);
+      let petal2Fall = setInterval(() => {
+        let currentTop2= parseFloat(petal2.style.top);
+        if (currentTop2 >= window.innerHeight - 200) {
+          clearInterval(petal2Fall);
+          document.body.removeChild(petal2);
+        } else {
+          petal2.style.top = (currentTop2 + 1) + 'px';
+        }
+      }, 10);
+    }
+  </script>
+
+  <!-- 여름 계절을 나타내는 div -->
+  <div class="season" id="summer">
+    <img src="summer.jpg" alt="Summer">
+    <div class="text">Summer</div>
+    <a href="pageB.html#summer" class="additional">추가 정보</a> 
+    <div class="circle"> 
+      <div class="wave-one"></div>
+      <div class="wave-two"></div>
+      <div class="wave-three"></div>
+      <div class="wave-four"></div>
+    </div>
+  </div>
+  <script>
+    var summer = document.getElementById('summer');
+    var circle = summer.querySelector('.circle');
+  
+    // 여름 계절에 마우스를 올렸을 때 웨이브 효과를 보여주고, 마우스를 내렸을 때 효과를 숨김
+    summer.addEventListener('mouseover', function() {
+      // 웨이브 효과를 보여주기 위해 circle 요소의 스타일 속성을 변경합니다.
+      circle.style.display = 'block';  // display 속성을 'block'으로 설정하여 요소를 보이게 합니다.
+      circle.style.position = 'fixed';  // position 속성을 'fixed'로 설정하여 요소의 위치를 고정합니다.
+      circle.style.bottom = '0%';  // bottom 속성을 '0%'로 설정하여 요소를 화면 하단에 위치시킵니다.
+      circle.style.left = '50%';  // left 속성을 '50%'로 설정하여 요소를 화면 중앙에 위치시킵니다.
+      circle.style.transform = 'translate(-50%, -50%)';  // transform 속성을 사용하여 요소의 위치를 조정합니다.
+    });
+  
+    summer.addEventListener('mouseout', function() {
+      // 마우스를 내렸을 때 웨이브 효과를 숨기기 위해 circle 요소의 스타일 속성을 원래대로 돌립니다.
+      circle.style.display = 'none';
+      circle.style.position = 'absolute';
+      circle.style.top = '';
+      circle.style.left = '';
+      circle.style.transform = '';
+    });
+  </script>
+  
+  <!-- 가을 계절을 나타내는 div -->
+  <div class="season" id="fall">
+    <img src="fall.jpg" alt="Fall">
+    <div class="text">Fall</div>
+    <a href="pageB.html#fall" class="additional">추가 정보</a>
+  </div>
+  <script>
+    const fall = document.getElementById('fall');
+    let leaveInterval;
+    let leave2Interval;
+    // 가을 계절에 마우스를 올렸을 때 낙엽 생성 이벤트를 시작하고, 마우스를 내렸을 때 이벤트를 중단
+    fall.addEventListener('mouseover', function(){
+      // spring과 같은 방식으로 작동 하지만, 어디서 생성되는지가 다릅니다.
+      leaveInterval = setInterval(createLeave, 100);
+      leave2Interval = setInterval(createLeave2, 100);
+    });
+
+    fall.addEventListener('mouseout', function(){
+      clearInterval(leaveInterval);
+      clearInterval(leave2Interval);
+    });
+
+    function createleaves() {
+      createleaves('leave');
+      createleaves('leave2');
+    }
+
+    function createLeave() {
+      let leave = document.createElement('img');
+      leave.src = 'leave.png';
+      leave.className = 'leave';
+      leave.style.left = '0px';
+      leave.style.top = Math.random() * (window.innerHeight * 0.3) + window.innerHeight * 0.6 + 'px'; 
+      document.body.appendChild(leave);
+    }
+
+    function createLeave2() {
+      let leave2 = document.createElement('img');
+      leave2.src = 'leave2.png';
+      leave2.className = 'leave2';
+      leave2.style.left = '0px';
+      leave2.style.top = Math.random() * (window.innerHeight * 0.3) + window.innerHeight * 0.6 + 'px'; 
+      document.body.appendChild(leave2);
+    }
+
+  </script>
+
+  <!-- 겨울 계절을 나타내는 div -->
+  <div class="season" id="winter">
+    <img src="winter.jpg" alt="Winter">
+    <div class="text">Winter</div>
+    <a href="pageB.html#winter" class="additional">추가 정보</a> 
+  </div>
+  <div id="overlay"></div>
+  <script>
+    const winter = document.getElementById('winter');
+    let snowflakeInterval;
+    let snowflake2Interval;
+
+    // 겨울 계절에 마우스를 올렸을 때 눈송이 생성 이벤트를 시작하고, 마우스를 내렸을 때 이벤트를 중단
+    winter.addEventListener('mouseover', function(){
+      // spring과 같은 방식으로 작동됩니다.
+      snowflakeInterval = setInterval(createSnowflake, 100);
+      snowflake2Interval = setInterval(createSnowflake2, 100);
+    });
+
+    winter.addEventListener('mouseout', function(){
+      clearInterval(snowflakeInterval);
+      clearInterval(snowflake2Interval);
+    });
+    
+    function createSnowflakes() {
+      createsnowflakes('snowflake');
+      createsnowflakes('snowflake2');
+    }
+
+    function createSnowflake() {
+      let snowflake = document.createElement('img');
+      snowflake.src =  'snowflake.png'; 
+      snowflake.className = 'snowflake';
+      snowflake.style.top = '0px';
+      snowflake.style.left = (Math.random() * (window.innerWidth * 0.8) + window.innerWidth * 0.1) + 'px';
+      document.body.appendChild(snowflake);
+      let snowflakeFall = setInterval(() => {
+        let currentTop = parseFloat(snowflake.style.top);
+        if (currentTop >= window.innerHeight - 200) {
+          clearInterval(snowflakeFall);
+          document.body.removeChild(snowflake);
+        } else {
+          snowflake.style.top = (currentTop + 1) + 'px';
+        }
+      }, 10);
+    }
+
+    function createSnowflake2() {
+      let snowflake2 = document.createElement('img');
+      snowflake2.src = 'snowflake2.png'; 
+      snowflake2.className = 'snowflake2';
+      snowflake2.style.top = '0px';
+      snowflake2.style.left = (Math.random() * (window.innerWidth * 0.8) + window.innerWidth * 0.1) + 'px';
+      document.body.appendChild(snowflake2);
+      let snowflake2Fall = setInterval(() => {
+        let currentTop2 = parseFloat(snowflake2.style.top);
+        if (currentTop2 >= window.innerHeight - 200) {
+          clearInterval(snowflake2Fall);
+          document.body.removeChild(snowflake2);
+        } else {
+          snowflake2.style.top = (currentTop2 + 1) + 'px';
+        }
+      }, 10);
+    }
+  </script>
+</body>
+</html>
